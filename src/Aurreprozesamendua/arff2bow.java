@@ -51,16 +51,18 @@ public class arff2bow {
         Instances newDataNonSparse = Filter.useFilter(newData,filter2);
 
         //TODO
+        /*
         Reorder filter3 = new Reorder();
         filter3.setAttributeIndices("2-"+ newDataNonSparse.numAttributes()+",1");
         filter3.setInputFormat(newDataNonSparse);
         System.out.println(newDataNonSparse);
         Instances newDataReorder = Filter.useFilter(newDataNonSparse, filter3);
         System.out.println(newDataReorder);
+        */
 
         // Guardar el nuevo conjunto de datos transformado en un archivo ARFF
         ArffSaver saver = new ArffSaver();
-        saver.setInstances(newDataReorder);
+        saver.setInstances(newDataNonSparse);
         saver.setFile(new File(args[1]));
         saver.writeBatch();
 

@@ -15,14 +15,15 @@ public class fssInfoGain {
         ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[0]);
         Instances data = source.getDataSet();
         //TODO
-        data.setClassIndex(data.numAttributes()-1);
+        //data.setClassIndex(data.numAttributes()-1); --> con Reorder
+        data.setClassIndex(0);
         System.out.println("Atributu kopurua train: " + (data.numAttributes() - 1));
         AttributeSelection attributeSelection = new AttributeSelection();
         InfoGainAttributeEval eval = new InfoGainAttributeEval();
         attributeSelection.setEvaluator(eval);
         Ranker ranker = new Ranker();
         //TODO
-        ranker.setNumToSelect(2000);
+        ranker.setNumToSelect(300);
         attributeSelection.setSearch(ranker);
         attributeSelection.setInputFormat(data);
         Instances filteredData = Filter.useFilter(data, attributeSelection);
