@@ -9,16 +9,18 @@ public class getARFF{
     public static void main(String[] args) throws Exception{
         try {
             if (args.length != 3){
-                System.out.println("Helburua: .txt fitxategi bat .arff fitxategi formatura egokitzea/pasatzea.");
+                System.out.println("Helburua: .txt fitxategi bat (train edo dev) .arff fitxategi formatura egokitzea/pasatzea.");
                 System.out.println("Aurre-baldintzak: ");
                 System.out.println("    Sartu beharreko argumentuak hurrengoak dira: ");
                 System.out.println("    0. txt fitxategiaren path-a.");
                 System.out.println("    1. arff fitxategiaren path-a.");
+                System.out.println("    2. txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
+                System.out.println("    java -jar getARFF.java \"/path/train.txt\" \"/path/train.arff\" \"/path/trainGarbia.txt\"");
                 System.out.println("Post-baldintzak: ");
                 System.out.println("    Sartutako .arff fitxategian .txt-ko datuak izatea formatu egokian.");
-                System.out.println("    Sartutako 0 argumentua train bada --> \"testua\", klasea egituradun .arff fitxategia lortu.");
-                System.out.println("    Sartutako 0 argumentua dev bada --> \"testua\", klasea egituradun .arff fitxategia lortu.");
-                System.out.println("    Sartutako 0 argumentua test (blind) bada --> Test blind-ean klasea iragarri nahi dugunez .arff fitxategian testua baiño ez dugu izango.");
+                System.out.println("    Sartutako 0 argumentua train bada --> \"testua\", klasea --> egituradun .arff fitxategia lortu.");
+                System.out.println("    Sartutako 0 argumentua dev bada --> \"testua\", klasea --> egituradun .arff fitxategia lortu.");
+                System.out.println("    test (blind) txt fitxategiaren konbertsioa iragarpenak klasean egingo dugu.");
             } else {
                 if (args[0].contains("train")) {
                     karaktereArraroakKendu(args[0], args[2]);
