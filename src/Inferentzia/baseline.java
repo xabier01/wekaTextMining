@@ -1,116 +1,129 @@
 package Inferentzia;
 
+import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.BayesNet;
+import weka.classifiers.bayes.net.estimate.SimpleEstimator;
+import weka.classifiers.bayes.net.search.SearchAlgorithm;
+import weka.classifiers.bayes.net.search.local.*;
+import weka.core.SerializationHelper;
 import weka.core.converters.ConverterUtils;
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.instance.Randomize;
 import weka.filters.unsupervised.instance.RemovePercentage;
 import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.evaluation.Evaluation;
 
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Random;
 
 public class baseline {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
 
-        //ARGUMENTUAK TXARTO SARTU DIRA
-        if (args.length < 2) {
-            System.out.println("Sartu argumentuak ondo: ");
-            System.out.println("1. Datu sorta dakarren .arff fitxategiaren path-a.");
-            System.out.println("2. Emaitzak gordetzeko fitxategiaren path-a.");
-            return;
-        }
-
-        //ARGUMENTUAK ONDO SARTU DIRA
-        if (args.length == 2){
-            System.out.println("Sartutako argumentuak: ");
-            for (int i = 0; i < args.length; i++) {
-                System.out.println((i + 1) + ". Path-a: " + args[i]);
-            }
-        }
-
-        //DATUAK KARGATU
+        //1. Argumentuak gorde
+        // Cargar conjunto de datos de entrenamiento
         ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[0]);
-        Instances data = source.getDataSet();
-        data.setClassIndex(data.numAttributes()-1);
+        Instances train = source.getDataSet();
+        train.setClassIndex(train.numAttributes()-1);
 
-        //INSTANTZIAK RANDOMIZATU
-        Randomize filter_random = new Randomize();
-        filter_random.setRandomSeed(1);
-        filter_random.setInputFormat(data);
-        Instances data_random = Filter.useFilter(data, filter_random);
-        System.out.println("Instantzia kopurua: " + data_random.numInstances());
+        // Cargar conjunto de datos de desarrollo
+        ConverterUtils.DataSource source2 = new ConverterUtils.DataSource(args[1]);
+        Instances dev = source2.getDataSet();
+        dev.setClassIndex(dev.numAttributes()-1);
 
-        //TEST ETA TRAIN
-        RemovePercentage filter_remove = new RemovePercentage();
-        filter_remove.setPercentage(70);
-        filter_remove.setInvertSelection(false);
-        filter_remove.setInputFormat(data_random);
-        Instances test_instances = Filter.useFilter(data_random, filter_remove);
-        System.out.println("Test-en instantzia kopurua: " + test_instances.numInstances());
+        // Cargar conjunto de datos completo
+        ConverterUtils.DataSource source3 = new ConverterUtils.DataSource(args[2]);
+        Instances traindev = source3.getDataSet();
+        traindev.setClassIndex(traindev.numAttributes()-1);
 
-        filter_remove.setInvertSelection(true);
-        filter_remove.setInputFormat(data_random);
-        Instances train_instances = Filter.useFilter(data_random, filter_remove);
-        System.out.println("Train-en instantzia kopurua: " + train_instances.numInstances());
+        String emaitzakPath = args[3];
 
-        test_instances.setClassIndex(test_instances.numAttributes()-1);
-        train_instances.setClassIndex(train_instances.numAttributes()-1);
+        //3. Modeloa sortu
+        NaiveBayes naiveBayes = new NaiveBayes();
+        naiveBayes.buildClassifier(traindev);
 
-        //SAILKATZAILEA
-        NaiveBayes nb = new NaiveBayes();
-        nb.buildClassifier(train_instances);
+        //5. Ebaluatu eta estimazioa fitxategian gorde
+        System.out.println("Ebaluazioa egiten...");
+        File emaitzak = new File(emaitzakPath);
+        FileWriter fw = new FileWriter(emaitzak);
+        fw.write("################## KALITATEAREN ESTIMAZIOA ##################\n\n\n");
 
-        //EBALUATZAILEA
-        Evaluation eval = new Evaluation(train_instances);
-        eval.evaluateModel(nb, test_instances);
+        //EZ-ZINTZOA
+        fw.write("-----------EZ ZINTZOA------------\n\n");
+        System.out.println("Ebaluazio EZ-ZINTZOA hasten...");
+        Evaluation evalEZintzoa = new Evaluation(traindev);
+        evalEZintzoa.evaluateModel(naiveBayes, traindev);
+        fw.write("\n" + evalEZintzoa.toClassDetailsString() + "\n");
+        fw.write("\n" + evalEZintzoa.toSummaryString() + "\n");
+        fw.write("\n" + evalEZintzoa.toMatrixString() + "\n");
+        System.out.println("Ebaluazio EZ-ZINTZOA eginda...");
 
-        //EMAITZEN FITXATEGIA LORTU
-        fitxategiaSortu(eval, args, data_random);
-    }
+        //CROSS VALIDATION
+        fw.write("-----------CROSS VALIDATION----------\n\n");
+        System.out.println("10 FOLD CROSS VALIDATION ebaluazioa hasten...");
+        Evaluation eval10fCV = new Evaluation(traindev);
+        eval10fCV.crossValidateModel(naiveBayes, traindev, 10, new Random(1));
+        fw.write("\n" + eval10fCV.toClassDetailsString() + "\n");
+        fw.write("\n" + eval10fCV.toSummaryString() + "\n");
+        fw.write("\n" + eval10fCV.toMatrixString() + "\n");
+        System.out.println("10 FOLD CROSS VALIDATION ebaluazioa eginda");
 
-    private static void fitxategiaSortu(Evaluation eval, String[] args, Instances data) {
-        try{
-            FileWriter fitxategia = new FileWriter(args[1]);
-            PrintWriter pw = new PrintWriter(fitxategia);
-            String fecha = new SimpleDateFormat("yyyy/MM/dd HH/mm/ss").format(Calendar.getInstance().getTime());
-            pw.println("Exekuzio data: " + fecha);
-            pw.println("Jasotako path-ak: ");
-            for (int i = 0; i < args.length; i++){
-                pw.println((i+1) + ". Path-a: " + args[i]);
+        //HOLD OUT
+        System.out.println("HOLD OUT ebaluazioa hasten...");
+        //5.6. Sailkatzailea entrenatu --> train
+        NaiveBayes naiveBayes2 = new NaiveBayes();
+        naiveBayes2.buildClassifier(train);
+
+        //5.7. Ebaluazioa egin --> dev
+        Evaluation evalHO = new Evaluation(train);
+        evalHO.evaluateModel(naiveBayes2, dev);
+        // System.out.println(evalHO.toSummaryString());
+        // System.out.println(evalHO.toMatrixString());
+        // System.out.println(evalHO.toClassDetailsString());
+
+        fw.write("---------HOLDOUT---------\n\n");
+        fw.write("\n" + evalHO.toClassDetailsString() + "\n");
+        fw.write("\n" + evalHO.toSummaryString() + "\n");
+        fw.write("\n" + evalHO.toMatrixString() + "\n");
+        System.out.println("HOLD-OUT ebaluazioa eginda...");
+        fw.close();
+
+        /*
+        //HOLD-OUT 20 ALDIZ
+        fw.write("---------REPEATED HOLDOUT (20)---------\n\n");
+        System.out.println("20 HOLD-OUT ebaluazioa hasten...");
+        Evaluation evalHoldOut = new Evaluation(train);
+        for (int i = 0; i < 20; i++) {
+            //5 iterazio behin printeatu
+            if (i < 5) {
+                System.out.println("\t" + (i + 1) + "/20 iterazioa");
             }
-            pw.println("Nahasmen matrizea: " + eval.toMatrixString());
-            pw.println(eval.toClassDetailsString());
-            pw.println(eval.toSummaryString());
 
-            //System.out.println("Klase minoritarioa: ");
-            int[] maiztasunak = data.attributeStats(data.numAttributes()-1).nominalCounts;
-            int MaizMin = maiztasunak[0];
-            int MaizMinPos = 0;
-            int i = 0;
-            while (i < maiztasunak.length) {
-                if (maiztasunak[i] < MaizMin){
-                    MaizMin = maiztasunak[i];
-                    MaizMinPos = i;
-                }
-                i++;
-            }
-            double precision = eval.precision(MaizMinPos);
-            double recall = eval.recall(MaizMinPos);
-            double FScore = eval.fMeasure(MaizMinPos);
-            pw.println("");
-            pw.println("klase minoritarioa: " + data.classAttribute().value(MaizMinPos));
-            pw.println("klase minoritarioaren precision: " + precision);
-            pw.println("klase minoritarioaren recall: " + recall);
-            pw.println("klase minoritarioaren FScore: " + FScore);
-            //pw.println("Coinciden, está bien");
-            pw.close();
+            //Randomize
+            Randomize filter = new Randomize();
+            filter.setInputFormat(train);
+            filter.setRandomSeed(i);
+            Instances randomData = Filter.useFilter(train, filter);
+            randomData.setClassIndex(randomData.numAttributes() - 1);
+
+            //RemovePercentage --> train eta test lortu
+            RemovePercentage filterRemove = new RemovePercentage();
+            filterRemove.setInputFormat(randomData);
+            filterRemove.setPercentage(70);
+            filterRemove.setInvertSelection(false);
+            Instances testHO = Filter.useFilter(randomData, filterRemove);
+            testHO.setClassIndex(testHO.numAttributes() - 1);
+            System.out.println("TestHO-ren instantzia kopurua: " + testHO.numInstances());
+
+            filterRemove.setInvertSelection(true);
+            filterRemove.setInputFormat(randomData);
+            Instances trainHO = Filter.useFilter(randomData, filterRemove);
+            System.out.println("TrainHO-ren instantzia kopurua: " + trainHO.numInstances());
+
+            //Ebaluatu
+            evalHoldOut.evaluateModel(naiveBayes, testHO);
         }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        */
     }
 }
