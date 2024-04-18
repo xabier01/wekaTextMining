@@ -113,6 +113,8 @@ public class iragarpenak {
             reorder.setInputFormat(testBlind);
             testBlind = Filter.useFilter(testBlind, reorder);
 
+            //TODO
+            //Esto es lo de testBlindFinal.arff, que lo guardo para mirarlo en weka (pero no hace falta guardarlo)
             ArffSaver saver = new ArffSaver();
             saver.setInstances(testBlind);
             saver.setFile(new File(args[6]));
