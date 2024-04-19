@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Inferentzia:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Inferentzia_jar</output-path>
+    <root id="archive" name="wekaTextMining.jar">
+      <element id="module-output" name="wekaTextMining" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../weka/weka-3-8-6-azul-zulu-linux/weka-3-8-6/weka.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
