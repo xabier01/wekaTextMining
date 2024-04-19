@@ -30,7 +30,7 @@ public class getARFF{
                 BufferedReader reader = new BufferedReader(new FileReader(args[2]));
                 BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
 
-                // Escribir encabezado del archivo ARFF
+                // ARFF-aren goiburuak idatzi
                 writer.write("@relation spam\n\n");
                 writer.write("@attribute message string\n\n");
                 writer.write("@attribute klasea {spam, ham}\n");
@@ -39,26 +39,20 @@ public class getARFF{
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (args[0].contains("train")) {
-                        // Separar la línea en clase y mensaje
+                        // Lerroa klase eta mezuan zatitu
                         String[] parts = line.split("\t", 2);
                         String clase = parts[0];
                         String mensaje = parts[1];
-
-                        // Escapar comillas dobles en el mensaje
                         mensaje = mensaje.replace("\"", "\\\"");
-
-                        // Escribir la línea en el archivo ARFF
+                        // Lerroa ARFF fitxategian idatzi
                         writer.write("\"" + mensaje + "\", " + clase + "\n");
                     } else if (args[0].contains("dev")) {
-                        // Separar la línea en clase y mensaje
+                        // Lerroa klase eta mezuan zatitu
                         String[] parts = line.split("\t", 2);
                         String clase = parts[0];
                         String mensaje = parts[1];
-
-                        // Escapar comillas dobles en el mensaje
                         mensaje = mensaje.replace("\"", "\\\"");
-
-                        // Escribir la línea en el archivo ARFF
+                        // Lerroa ARFF fitxategian idatzi
                         writer.write("\"" + mensaje + "\", " + clase + "\n");
 
                     /*
@@ -91,9 +85,6 @@ public class getARFF{
         String line;
 
         while ((line = br.readLine()) != null) {
-            // line = line.replace(subString, "");
-            //line = line.replaceAll("[`'?.]", "");
-            //pw.println(line);
             String regex = "[^a-zA-Z0-9\\s]";
             line = line.replaceAll(regex, "");
             pw.println(line);

@@ -11,8 +11,6 @@ import weka.core.Instances;
 import weka.core.Utils;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
-import weka.filters.unsupervised.instance.Randomize;
-import weka.filters.unsupervised.instance.RemovePercentage;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,8 +29,6 @@ public class parametroEkorketa {
             System.out.println("    Parametroak.txt fitxategian parametro optimoak gordeta egotea.");
         } else {
             // PARAMETRO EKORKETA
-
-            //TODO
             /*
             QUE HAY QUE HACER?:
             - LOS ALGORITMOS DE BUSQUEDA NO FUNCIONAN CON EL BAYESNETESTIMATOR PORQUE NO SON COMPATIBLES --> DESCARTADO
@@ -56,36 +52,29 @@ public class parametroEkorketa {
             int klaseMayoritarioaIndex = Utils.maxIndex(trainBOWFSS.attributeStats(trainBOWFSS.classIndex()).nominalCounts);
             System.out.println("Klase mayoritarioa: " + trainBOWFSS.attribute(trainBOWFSS.classIndex()).value(klaseMayoritarioaIndex));
 
-            //TODO
             //3. Bilaketa algoritmo desberdinak zehaztu
             K2 k2 = new K2();
             HillClimber hillClimber = new HillClimber();
             RepeatedHillClimber repeatedHillClimber = new RepeatedHillClimber();
             TAN tan = new TAN();
-            SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
+            //SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
             TabuSearch tabuSearch = new TabuSearch();
             //GeneticSearch geneticSearch = new GeneticSearch();
             //SearchAlgorithm[] algorithms = new SearchAlgorithm[]{k2, hillClimber, repeatedHillClimber, tan, simulatedAnnealing, tabuSearch, geneticSearch};
-            //SearchAlgorithm[] algorithms = new SearchAlgorithm[]{k2, hillClimber, repeatedHillClimber, tan, simulatedAnnealing, tabuSearch};
             SearchAlgorithm[] algorithms = new SearchAlgorithm[]{k2, hillClimber, repeatedHillClimber, tan, tabuSearch};
 
-            //TODO
             //Estimadoreak zehaztu
             //BayesNetEstimator bayesNetEstimator = new BayesNetEstimator();
-            //bayesNetEstimator.setAlpha();
             SimpleEstimator simpleEstimator = new SimpleEstimator();
-            //simpleEstimator.setAlpha();
 
             //4. Parametro optimoenak lortzeko aldagaiak
             SearchAlgorithm bestSearchAlgorithm = k2;
-            //BayesNetEstimator bestEstimator = null;
             Double bestFmeasure = 0.0;
             Double bestAlpha = 0.0;
             //Double bestPrecision = 0.0;
 
             int iterazioKop = 1;
 
-            //TODO
             //5. Algoritmo desberdinak alpha desberdiñentzako
             //for(int i = 0; i < 2; i++){
             for (double alpha = 0.25; alpha < 1; alpha += 0.25) {
@@ -101,7 +90,6 @@ public class parametroEkorketa {
                     //5.1. Sailkatzailea sortu
                     BayesNet bayesNet = new BayesNet();
 
-                    //TODO
                     //5.2. Parametroak finkatu
                     /*
                     if (i == 0){
@@ -116,47 +104,21 @@ public class parametroEkorketa {
                     bayesNet.setEstimator(simpleEstimator);
                     bayesNet.setSearchAlgorithm(algorithm);
 
-                    /*
-                    //HOLD OUT
-                    //5.3. Instantziak nahastu, randomize
-                    Randomize filterRandomize = new Randomize();
-                    //filterRandomize.setRandomSeed(1);
-                    filterRandomize.setRandomSeed(iterazioKop);
-                    filterRandomize.setInputFormat(data);
-                    Instances dataRandom = Filter.useFilter(data, filterRandomize);
-                    dataRandom.setClassIndex(dataRandom.numAttributes()-1);
-
-                    //5.4. test multzoak lortu
-                    RemovePercentage filterRemove = new RemovePercentage();
-                    filterRemove.setPercentage(70);
-                    filterRemove.setInvertSelection(false);
-                    filterRemove.setInputFormat(dataRandom);
-                    Instances test = Filter.useFilter(dataRandom, filterRemove);
-                    test.setClassIndex(test.numAttributes()-1);
-                    System.out.println("Test-en instantzia kopurua: " + test.numInstances());
-
-                    //5.5. train multzoa lortu
-                    filterRemove.setInvertSelection(true);
-                    filterRemove.setInputFormat(dataRandom);
-                    Instances train = Filter.useFilter(dataRandom, filterRemove);
-                    train.setClassIndex(train.numAttributes()-1);
-                    System.out.println("Train-en instantzia kopurua: " + train.numInstances());
-                    */
                     System.out.println("Train-en instantzia kopurua: " + trainBOWFSS.numInstances());
                     System.out.println("dev-en instantzia kopurua: " + devBOWFSS.numInstances());
 
                     //HOLD OUT
-                    //5.6. Sailkatzailea entrenatu
+                    //5.3. Sailkatzailea entrenatu
                     bayesNet.buildClassifier(trainBOWFSS);
 
-                    //5.7. Ebaluazioa egin
+                    //5.4. Ebaluazioa egin
                     Evaluation eval = new Evaluation(trainBOWFSS);
                     eval.evaluateModel(bayesNet, devBOWFSS);
                     System.out.println(eval.toSummaryString());
                     System.out.println(eval.toMatrixString());
                     System.out.println(eval.toClassDetailsString());
 
-                    //5.8. Parametro optimoak lortu
+                    //5.5. Parametro optimoak lortu
                     double fMeasure = eval.fMeasure(klaseMinoritarioaIndex);
                     System.out.println("F-measure klase minoritarioarekiko: " + fMeasure);
                     //System.out.println(eval.precision(klaseMayoritarioaIndex));
@@ -169,7 +131,7 @@ public class parametroEkorketa {
 
                     System.out.println("Best F-measure klase minoritarioarekiko: " + bestFmeasure);
 
-                    /*
+                    /* Egindako beste proba batzuk (sin mas)
                     if (eval.precision(klaseMayoritarioaIndex) > bestPrecision){
                         bestPrecision = eval.precision(klaseMayoritarioaIndex);
                         bestSearchAlgorithm = algorithm;

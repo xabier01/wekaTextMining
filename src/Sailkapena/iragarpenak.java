@@ -1,8 +1,6 @@
 package Sailkapena;
 
 import weka.classifiers.bayes.BayesNet;
-import weka.classifiers.evaluation.Evaluation;
-import weka.classifiers.evaluation.Prediction;
 
 import weka.core.Instances;
 import weka.core.SerializationHelper;
@@ -40,7 +38,7 @@ public class iragarpenak {
             BufferedReader reader = new BufferedReader(new FileReader(args[2]));
             BufferedWriter writer = new BufferedWriter(new FileWriter(args[3]));
 
-            // Escribir encabezado del archivo ARFF
+            // ARFF-aren goiburua idatzi
             writer.write("@relation spam\n\n");
             writer.write("@attribute message string\n\n");
             writer.write("@attribute klasea {spam, ham}\n");
@@ -51,7 +49,7 @@ public class iragarpenak {
             while ((line = reader.readLine()) != null) {
                 if (args[2].contains("test")) {
 
-                    // Escribir la línea en el archivo ARFF
+                    // lerroa ARFF fitxategian idatzi
                     writer.write("\"" + line + "\", ?\n");
                     //writer.write("\"" + line + "\", unknown\n");
                     System.out.println(lerroa + " " + line);
@@ -64,37 +62,6 @@ public class iragarpenak {
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[3]);
             Instances testBlind = source.getDataSet();
             testBlind.setClassIndex(testBlind.numAttributes() - 1);
-
-            /*
-            NominalToString nts = new NominalToString();
-            nts.setAttributeIndexes("6");
-            nts.setInputFormat(testBlind);
-            testBlind = Filter.useFilter(testBlind, nts);
-
-            RenameAttribute ra = new RenameAttribute();
-            ra.setAttributeIndices("2");
-            ra.setReplace("moduleAttr");
-            ra.setInputFormat(testBlind);
-            testBlind = Filter.useFilter(testBlind, ra);
-
-            ra = new RenameAttribute();
-            ra.setAttributeIndices("3");
-            ra.setReplace("ageAttr");
-            ra.setInputFormat(testBlind);
-            testBlind = Filter.useFilter(testBlind, ra);
-
-            ra = new RenameAttribute();
-            ra.setAttributeIndices("4");
-            ra.setReplace("siteAttr");
-            ra.setInputFormat(testBlind);
-            testBlind = Filter.useFilter(testBlind, ra);
-
-            ra = new RenameAttribute();
-            ra.setAttributeIndices("5");
-            ra.setReplace("sexAttr");
-            ra.setInputFormat(testBlind);
-            testBlind = Filter.useFilter(testBlind, ra);
-            */
 
             FixedDictionaryStringToWordVector fds = new FixedDictionaryStringToWordVector();
             File hiztegiBerria = new File(args[4]);
@@ -113,33 +80,15 @@ public class iragarpenak {
             reorder.setInputFormat(testBlind);
             testBlind = Filter.useFilter(testBlind, reorder);
 
-            //TODO
             //Esto es lo de testBlindFinal.arff, que lo guardo para mirarlo en weka (pero no hace falta guardarlo)
             ArffSaver saver = new ArffSaver();
             saver.setInstances(testBlind);
             saver.setFile(new File(args[6]));
             saver.writeBatch();
 
-            //SMO model = (SMO) SerializationHelper.read(args[0]);
             BayesNet model = (BayesNet) SerializationHelper.read(args[0]);
 
-            /*
-            //IRAGARPENAK1
-            Evaluation eval = new Evaluation(testBlind);
-            eval.evaluateModel(model, testBlind);
-
-            FileWriter fw = new FileWriter(args[7]);
-            fw.write("BayesNet-ren iragarpenak: ");
-            int instantzia = 1;
-            for (Prediction p : eval.predictions()) {
-                fw.write("\n" + instantzia + " iragarpena: " + p.predicted());
-                instantzia++;
-            }
-
-            fw.close();
-            */
-
-            // IRAGARPENAK2
+            // IRAGARPENAK
             testBlind.setClassIndex(testBlind.numAttributes() - 1);
             FileWriter f2 = new FileWriter(args[5]);
             PrintWriter pw2 = new PrintWriter(f2);
@@ -159,9 +108,6 @@ public class iragarpenak {
         String line;
 
         while ((line = br.readLine()) != null) {
-            // line = line.replace(subString, "");
-            //line = line.replaceAll("[`'?.]", "");
-            //pw.println(line);
             String regex = "[^a-zA-Z0-9\\s]";
             line = line.replaceAll(regex, "");
             pw.println(line);

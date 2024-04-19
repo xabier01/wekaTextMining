@@ -35,20 +35,20 @@ public class fssInfoGain {
         } else {
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[0]);
             Instances trainBOW = source.getDataSet();
-            //TODO
             trainBOW.setClassIndex(trainBOW.numAttributes() - 1);
             //data.setClassIndex(0); --> sin Reorder
             System.out.println("Atributu kopurua trainBOW: " + (trainBOW.numAttributes() - 1));
+
             AttributeSelection attributeSelection = new AttributeSelection();
             InfoGainAttributeEval eval = new InfoGainAttributeEval();
             attributeSelection.setEvaluator(eval);
             Ranker ranker = new Ranker();
-            //TODO
             ranker.setNumToSelect(1500);
             attributeSelection.setSearch(ranker);
             attributeSelection.setInputFormat(trainBOW);
             Instances trainBOWFSS = Filter.useFilter(trainBOW, attributeSelection);
             System.out.println("Atributu kopurua berria trainBOWFSS: " + (trainBOWFSS.numAttributes() - 1));
+
             ArffSaver saver = new ArffSaver();
             saver.setInstances(trainBOWFSS);
             saver.setFile(new File(args[1]));
@@ -56,10 +56,10 @@ public class fssInfoGain {
 
             FileWriter fWriter = new FileWriter(args[3]);
             try {
-                File file = new File(args[2]);    //creates a new file instance
-                FileReader fr = new FileReader(file);   //reads the file
-                BufferedReader br = new BufferedReader(fr);  //creates a buffering character input stream
-                StringBuffer sb = new StringBuffer();    //constructs a string buffer with no characters
+                File file = new File(args[2]);
+                FileReader fr = new FileReader(file);
+                BufferedReader br = new BufferedReader(fr);
+                StringBuffer sb = new StringBuffer();
                 String line;
                 br.readLine();
                 for (int i = 0; i < trainBOWFSS.numAttributes() - 1; i++) {
@@ -95,7 +95,6 @@ public class fssInfoGain {
             Instances dev_bow_fss = Filter.useFilter(dev, fixedBoW);
             System.out.println("Dev_bow_fss-ren atributu kop: " + (dev_bow_fss.numAttributes() - 1));
 
-            //TODO
             SparseToNonSparse filter = new SparseToNonSparse();
             filter.setInputFormat(dev_bow_fss);
             dev_bow_fss = Filter.useFilter(dev_bow_fss, filter);

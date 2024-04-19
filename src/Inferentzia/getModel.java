@@ -9,10 +9,6 @@ import weka.core.Instances;
 import weka.core.SerializationHelper;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.ConverterUtils;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.FixedDictionaryStringToWordVector;
-import weka.filters.unsupervised.instance.Randomize;
-import weka.filters.unsupervised.instance.RemovePercentage;
 
 import java.io.*;
 import java.util.Random;
@@ -38,26 +34,25 @@ public class getModel {
             System.out.println("    Modeloaren kalitatearen estimazioa gordetzea.");
         } else {
 
-            //TODO
             //Aquí hay que juntar train y dev para hacer el buildclassifier
 
-            // Cargar conjunto de datos de entrenamiento
+            // Train datuak kargatu
             ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[0]);
             Instances train = source.getDataSet();
             train.setClassIndex(train.numAttributes() - 1);
 
-            // Cargar conjunto de datos de desarrollo
+            // dev datuak kargatu
             ConverterUtils.DataSource source2 = new ConverterUtils.DataSource(args[1]);
             Instances dev = source2.getDataSet();
             dev.setClassIndex(dev.numAttributes() - 1);
 
-            // Combinar los conjuntos de datos
+            // Biak batu
             Instances combined = new Instances(train);
             for (int i = 0; i < dev.numInstances(); i++) {
                 combined.add(dev.instance(i));
             }
 
-            // Guardar el conjunto de datos combinado en un nuevo archivo ARFF
+            // Bien batzea ARFF batean gorde
             ArffSaver saver = new ArffSaver();
             saver.setInstances(combined);
             saver.setFile(new File(args[2]));
@@ -98,33 +93,6 @@ public class getModel {
                             TabuSearch tabuSearch = new TabuSearch();
                             searchAlgorithm = tabuSearch;
                         }
-
-                        /*
-                        if (Algoritmoa.contains("class weka.classifiers.bayes.net.search.local.")){
-                            String AlgoritmoIzena = Algoritmoa.split(".")[2];
-                            System.out.println("Algoritmoa: " + AlgoritmoIzena);
-                            if (AlgoritmoIzena.equals("K2")){
-                                K2 k2 = new K2();
-                                searchAlgorithm = k2;
-                            } else if (AlgoritmoIzena.equals("HillClimber")) {
-                                HillClimber hillClimber = new HillClimber();
-                                searchAlgorithm = hillClimber;
-                            } else if (AlgoritmoIzena.equals("RepeatedHillClimber")) {
-                                RepeatedHillClimber repeatedHillClimber = new RepeatedHillClimber();
-                                searchAlgorithm = repeatedHillClimber;
-                            } else if (AlgoritmoIzena.equals("TAN")) {
-                                TAN tan = new TAN();
-                                searchAlgorithm = tan;
-                            } else if (AlgoritmoIzena.equals("SimulatedAnnealing")) {
-                                SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing();
-                                searchAlgorithm = simulatedAnnealing;
-                            } else if (AlgoritmoIzena.equals("TabuSearch")) {
-                                TabuSearch tabuSearch = new TabuSearch();
-                                searchAlgorithm = tabuSearch;
-                            }
-                        }
-                        */
-
                     } else if (line.contains("Alpha optimoa")) {
                         alpha = Double.parseDouble((line.split(":")[1]));
                     }
@@ -132,45 +100,6 @@ public class getModel {
             }
             System.out.println("train_dev-en instantzia kopurua: " + train_dev.numInstances());
             System.out.println("train_dev-en atributu kopurua: " + train_dev.numAttributes());
-
-
-            /*
-            //Hiztegi definitiboa
-            FileWriter fWriter = new FileWriter(args[7]);
-            try
-            {
-                File file=new File(args[6]);    //creates a new file instance
-                FileReader fr=new FileReader(file);   //reads the file
-                BufferedReader br=new BufferedReader(fr);  //creates a buffering character input stream
-                StringBuffer sb=new StringBuffer();    //constructs a string buffer with no characters
-                String line;
-                br.readLine();
-                for (int i = 0; i < train_dev.numAttributes()-1; i++) {
-                    String att = train_dev.attribute(i).name();
-                    while((line=br.readLine())!=null) {
-                        String lineS = line.split(",")[0];
-                        if(lineS.equals(train_dev.attribute(i).name())) {
-                            fWriter.write(line + "\n");
-                        }
-                    }
-                    fr = new FileReader(file);
-                    br = new BufferedReader(fr);
-                }
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-            }
-            fWriter.close();
-
-            FixedDictionaryStringToWordVector fds = new FixedDictionaryStringToWordVector();
-            File hiztegiBerria = new File(args[7]);
-            fds.setDictionaryFile(hiztegiBerria);
-            fds.setInputFormat(train_dev);
-
-            train_dev = Filter.useFilter(train_dev, fds);
-            train_dev.setClassIndex(train_dev.numAttributes()-1);
-            */
 
             //3. Modeloa sortu
             System.out.println("Modeloa sortzen...");
@@ -187,7 +116,7 @@ public class getModel {
             //4. Modeloa gorde
             SerializationHelper.write(pathModel, bayesNet);
 
-            //5. Ebaluatu eta estimazioa fitxategian gorde
+            //5. Kalitatearen estimazioa
             System.out.println("Ebaluazioa egiten...");
             File emaitzak = new File(emaitzakPath);
             FileWriter fw = new FileWriter(emaitzak);
@@ -195,17 +124,17 @@ public class getModel {
 
             //EZ-ZINTZOA
             fw.write("-----------EZ ZINTZOA------------\n\n");
-            System.out.println("Ebaluazio EZ-ZINTZOA hasten...");
+            System.out.println("Ebaluazio EZ-ZINTZOA...");
             Evaluation evalEZintzoa = new Evaluation(train_dev);
             evalEZintzoa.evaluateModel(bayesNet, train_dev);
             fw.write("\n" + evalEZintzoa.toClassDetailsString() + "\n");
             fw.write("\n" + evalEZintzoa.toSummaryString() + "\n");
             fw.write("\n" + evalEZintzoa.toMatrixString() + "\n");
-            System.out.println("Ebaluazio EZ-ZINTZOA eginda...");
+            System.out.println("Ebaluazio EZ-ZINTZOA eginda");
 
             //CROSS VALIDATION
             fw.write("-----------CROSS VALIDATION----------\n\n");
-            System.out.println("10 FOLD CROSS VALIDATION ebaluazioa hasten...");
+            System.out.println("10 FOLD CROSS VALIDATION ebaluazioa...");
             Evaluation eval10fCV = new Evaluation(train_dev);
             eval10fCV.crossValidateModel(bayesNet, train_dev, 10, new Random(1));
             fw.write("\n" + eval10fCV.toClassDetailsString() + "\n");
@@ -214,8 +143,8 @@ public class getModel {
             System.out.println("10 FOLD CROSS VALIDATION ebaluazioa eginda");
 
             //HOLD OUT
-            System.out.println("HOLD OUT ebaluazioa hasten...");
-            //5.6. Sailkatzailea entrenatu --> train
+            System.out.println("HOLD OUT ebaluazioa...");
+            // Sailkatzailea entrenatu --> train
             BayesNet bayesNet2 = new BayesNet();
             SimpleEstimator simpleEstimator2 = new SimpleEstimator();
             simpleEstimator2.setAlpha(alpha);
@@ -223,7 +152,7 @@ public class getModel {
             bayesNet2.setSearchAlgorithm(searchAlgorithm);
             bayesNet2.buildClassifier(train);
 
-            //5.7. Ebaluazioa egin --> dev
+            // Ebaluazioa egin --> dev
             Evaluation evalHO = new Evaluation(train);
             evalHO.evaluateModel(bayesNet2, dev);
             // System.out.println(evalHO.toSummaryString());
@@ -234,45 +163,8 @@ public class getModel {
             fw.write("\n" + evalHO.toClassDetailsString() + "\n");
             fw.write("\n" + evalHO.toSummaryString() + "\n");
             fw.write("\n" + evalHO.toMatrixString() + "\n");
-            System.out.println("HOLD-OUT ebaluazioa eginda...");
+            System.out.println("HOLD-OUT ebaluazioa eginda");
             fw.close();
-
-            /*
-            //HOLD-OUT 20 ALDIZ
-            fw.write("---------REPEATED HOLDOUT (20)---------\n\n");
-            System.out.println("20 HOLD-OUT ebaluazioa hasten...");
-            Evaluation evalHoldOut = new Evaluation(train_dev);
-            for(int i=0; i<20; i++) {
-                //5 iterazio behin printeatu
-                if (i < 5){
-                    System.out.println((i+1) + "/20 iterazioa");
-                }
-
-                //Randomize
-                Randomize filter = new Randomize();
-                filter.setInputFormat(train_dev);
-                filter.setRandomSeed(i);
-                Instances randomData = Filter.useFilter(train_dev,filter);
-                randomData.setClassIndex(randomData.numAttributes()-1);
-
-                //RemovePercentage --> train eta test lortu
-                RemovePercentage filterRemove = new RemovePercentage();
-                filterRemove.setInputFormat(randomData);
-                filterRemove.setPercentage(70);
-                filterRemove.setInvertSelection(false);
-                Instances testHO = Filter.useFilter(randomData,filterRemove);
-                testHO.setClassIndex(testHO.numAttributes()-1);
-                System.out.println("TestHO-ren instantzia kopurua: " + testHO.numInstances());
-
-                filterRemove.setInvertSelection(true);
-                filterRemove.setInputFormat(randomData);
-                Instances trainHO = Filter.useFilter(randomData, filterRemove);
-                System.out.println("TrainHO-ren instantzia kopurua: " + trainHO.numInstances());
-
-                //Ebaluatu
-                evalHoldOut.evaluateModel(bayesNet, testHO);
-            }
-            */
         }
     }
 }
