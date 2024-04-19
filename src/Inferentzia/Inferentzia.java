@@ -31,7 +31,7 @@ public class Inferentzia {
             System.out.println("    4. Modeloa.model fitxategiaren path-a.");
             System.out.println("    5. kalitateEstimazioaModelo.txt fitxategiaren path-a.");
             System.out.println("    6. kalitateEstimazioaBaseline.txt fitxategiaren path-a.");
-            System.out.println("    java -jar getARFF.java \"/path/trainBOWFSS.arff\" \"/path/defBOWFSS.arff\" \"/path/parametroak.txt\" \"/path/traindev.arff\" \"/path/Modeloa.model\" \"/path/kalitateEstimazioaModelo.txt\" \"/path/kalitateEstimazioaBaseline.txt\"");
+            System.out.println("    java -jar Inferentzia.java \"/path/trainBOWFSS.arff\" \"/path/defBOWFSS.arff\" \"/path/parametroak.txt\" \"/path/traindev.arff\" \"/path/Modeloa.model\" \"/path/kalitateEstimazioaModelo.txt\" \"/path/kalitateEstimazioaBaseline.txt\"");
             System.out.println("Post-baldintzak: ");
             System.out.println("    parametroak.txt, Modeloa.model, kalitateEstimazioaModelo.txt, kalitateEstimazioaBaseline.txt lortzea.");
             System.out.println("    Bidean sortutako fitxategiak gordetzea ikusteko ondo goazen.");

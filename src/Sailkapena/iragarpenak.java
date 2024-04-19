@@ -29,7 +29,7 @@ public class iragarpenak {
             System.out.println("    4. hiztegiaBOWFSS.txt fitxategiaren path-a");
             System.out.println("    5. predictions.txt fitxategiaren path-a.");
             System.out.println("    6. testBlindFinal.arff fitxategiaren path-a (ikusteko bakarrik)");
-            System.out.println("    java -jar getARFF.java \"/path/Modeloa.model\" \"/path/test_blind.txt\" \"/path/test_blindGarbia.txt\" \"/path/test_blind.arff\" \"/path/hiztegiaBOWFSS.txt\" \"/path/predictions.txt\" \"/path/testBlindFinal.arff\"");
+            System.out.println("    java -jar iragarpenak.java \"/path/Modeloa.model\" \"/path/test_blind.txt\" \"/path/test_blindGarbia.txt\" \"/path/test_blind.arff\" \"/path/hiztegiaBOWFSS.txt\" \"/path/predictions.txt\" \"/path/testBlindFinal.arff\"");
             System.out.println("Post-baldintzak: ");
             System.out.println("    Iragarpenak gordetzea.");
         } else {

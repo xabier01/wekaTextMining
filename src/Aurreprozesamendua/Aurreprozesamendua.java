@@ -32,7 +32,7 @@ public class Aurreprozesamendua {
             System.out.println("    8. trainBOWFSS.arff fitxategiaren path-a.");
             System.out.println("    9. hiztegiaBOWFSS.txt fitxategiaren path-a.");
             System.out.println("    10. devBOWFSS.arff fitxategiaren path-a.");
-            System.out.println("    java -jar getARFF.java \"/path/train.txt\" \"/path/dev.txt\" \"/path/train.arff\" \"/path/dev.arff\" \"/path/trainGarbia.txt\" \"/path/devGarbia.txt\" \"/path/trainiBOW.arff\" \"/path/hiztegiBOW.txt\" \"/path/trainBOWFSS.arff\" \"/path/hiztegiBOWFSS.txt\" \"/path/devBOWFSS.arff\"");
+            System.out.println("    java -jar Aurreprozesamendua.java \"/path/train.txt\" \"/path/dev.txt\" \"/path/train.arff\" \"/path/dev.arff\" \"/path/trainGarbia.txt\" \"/path/devGarbia.txt\" \"/path/trainiBOW.arff\" \"/path/hiztegiBOW.txt\" \"/path/trainBOWFSS.arff\" \"/path/hiztegiBOWFSS.txt\" \"/path/devBOWFSS.arff\"");
             System.out.println("Post-baldintzak: ");
             System.out.println("    trainBOWFSS.arff, devBOWFSS.arff, hiztegiBOWFSS.txt lortzea.");
             System.out.println("    Bidean sortutako fitxategiak gordetzea ikusteko ondo goazen.");
