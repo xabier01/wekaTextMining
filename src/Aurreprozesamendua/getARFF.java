@@ -8,27 +8,29 @@ import java.io.*;
 public class getARFF{
     public static void main(String[] args) throws Exception{
         try {
-            if (args.length != 3){
-                System.out.println("Helburua: .txt fitxategi bat (train edo dev) .arff fitxategi formatura egokitzea/pasatzea.");
+            if (args.length != 6){
+                System.out.println("Helburua: train.txt eta dev.txt fitxategiak .arff fitxategi formatura egokitzea/pasatzea.");
                 System.out.println("Aurre-baldintzak: ");
                 System.out.println("    Sartu beharreko argumentuak hurrengoak dira: ");
-                System.out.println("    0. txt fitxategiaren path-a.");
-                System.out.println("    1. arff fitxategiaren path-a.");
-                System.out.println("    2. txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
+                System.out.println("    0. train.txt fitxategiaren path-a.");
+                System.out.println("    1. dev.txt fitxategiaren path-a.");
+                System.out.println("    2. train.arff fitxategiaren path-a.");
+                System.out.println("    3. dev.arff fitxategiaren path-a.");
+                System.out.println("    4. trainGarbia.txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
+                System.out.println("    5. devGarbia.txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
                 System.out.println("    java -jar getARFF.java \"/path/train.txt\" \"/path/train.arff\" \"/path/trainGarbia.txt\"");
                 System.out.println("Post-baldintzak: ");
-                System.out.println("    Sartutako .arff fitxategian .txt-ko datuak izatea formatu egokian.");
-                System.out.println("    Sartutako 0 argumentua train bada --> \"testua\", klasea --> egituradun .arff fitxategia lortu.");
-                System.out.println("    Sartutako 0 argumentua dev bada --> \"testua\", klasea --> egituradun .arff fitxategia lortu.");
+                System.out.println("    Sartutako train.arff fitxategian train.txt-ko datuak izatea formatu egokian.");
+                System.out.println("    Sartutako dev.arff fitxategian dev.txt-ko datuak izatea formatu egokian.");
+                System.out.println("    Egitura --> \"testua\", klasea --> egituradun .arff fitxategiak lortu.");
                 System.out.println("    test (blind) txt fitxategiaren konbertsioa iragarpenak klasean egingo dugu.");
             } else {
-                if (args[0].contains("train")) {
-                    karaktereArraroakKendu(args[0], args[2]);
-                } else if (args[0].contains("dev")) {
-                    karaktereArraroakKendu(args[0], args[2]);
-                }
-                BufferedReader reader = new BufferedReader(new FileReader(args[2]));
-                BufferedWriter writer = new BufferedWriter(new FileWriter(args[1]));
+
+                karaktereArraroakKendu(args[0], args[4]);
+                karaktereArraroakKendu(args[1], args[5]);
+
+                BufferedReader reader = new BufferedReader(new FileReader(args[4]));
+                BufferedWriter writer = new BufferedWriter(new FileWriter(args[2]));
 
                 // ARFF-aren goiburuak idatzi
                 writer.write("@relation spam\n\n");
@@ -38,40 +40,51 @@ public class getARFF{
 
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (args[0].contains("train")) {
-                        // Lerroa klase eta mezuan zatitu
-                        String[] parts = line.split("\t", 2);
-                        String clase = parts[0];
-                        String mensaje = parts[1];
-                        mensaje = mensaje.replace("\"", "\\\"");
-                        // Lerroa ARFF fitxategian idatzi
-                        writer.write("\"" + mensaje + "\", " + clase + "\n");
-                    } else if (args[0].contains("dev")) {
-                        // Lerroa klase eta mezuan zatitu
-                        String[] parts = line.split("\t", 2);
-                        String clase = parts[0];
-                        String mensaje = parts[1];
-                        mensaje = mensaje.replace("\"", "\\\"");
-                        // Lerroa ARFF fitxategian idatzi
-                        writer.write("\"" + mensaje + "\", " + clase + "\n");
-
-                    /*
-                    } else if (args[0].contains("test")) {
-                        String[] parts = line.split("\t");
-                        // Escribir la línea en el archivo ARFF
-                        writer.write("\"" + parts[0] + "\", ?\n");
-                        System.out.println(parts[0]);
-                    */
-                    }
+                    // Lerroa klase eta mezuan zatitu
+                    String[] parts = line.split("\t", 2);
+                    String clase = parts[0];
+                    String mensaje = parts[1];
+                    mensaje = mensaje.replace("\"", "\\\"");
+                    // Lerroa ARFF fitxategian idatzi
+                    writer.write("\"" + mensaje + "\", " + clase + "\n");
                 }
 
                 reader.close();
                 writer.close();
-                ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[1]);
-                Instances data = source.getDataSet();
-                data.setClassIndex(data.numAttributes()-1);
-                System.out.println("Sortutako .arff-ak dituen instantzia kopurua: ");
-                System.out.println(data.numInstances());
+                ConverterUtils.DataSource source = new ConverterUtils.DataSource(args[2]);
+                Instances train = source.getDataSet();
+                train.setClassIndex(train.numAttributes()-1);
+                System.out.println("train.arff-ak dituen instantzia kopurua: ");
+                System.out.println(train.numInstances());
+
+                BufferedReader reader1 = new BufferedReader(new FileReader(args[5]));
+                BufferedWriter writer1 = new BufferedWriter(new FileWriter(args[3]));
+
+                // ARFF-aren goiburuak idatzi
+                writer1.write("@relation spam\n\n");
+                writer1.write("@attribute message string\n\n");
+                writer1.write("@attribute klasea {spam, ham}\n");
+                writer1.write("@data\n");
+
+                String line1;
+                while ((line1 = reader1.readLine()) != null) {
+                    // Lerroa klase eta mezuan zatitu
+                    String[] parts = line1.split("\t", 2);
+                    String clase = parts[0];
+                    String mensaje = parts[1];
+                    mensaje = mensaje.replace("\"", "\\\"");
+                    // Lerroa ARFF fitxategian idatzi
+                    writer1.write("\"" + mensaje + "\", " + clase + "\n");
+                }
+
+                reader1.close();
+                writer1.close();
+                ConverterUtils.DataSource source1 = new ConverterUtils.DataSource(args[3]);
+                Instances dev = source1.getDataSet();
+                dev.setClassIndex(dev.numAttributes()-1);
+                System.out.println("dev.arff-ak dituen instantzia kopurua: ");
+                System.out.println(dev.numInstances());
+
                 System.out.println("Konbertsioa eginda.");
             }
         } catch (IOException e) {
