@@ -18,7 +18,7 @@ public class getARFF{
                 System.out.println("    3. dev.arff fitxategiaren path-a.");
                 System.out.println("    4. trainGarbia.txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
                 System.out.println("    5. devGarbia.txt fitxategi garbiaren path-a (karaktere arraroak kenduta gordetzeko).");
-                System.out.println("    java -jar getARFF.java \"/path/train.txt\" \"/path/train.arff\" \"/path/trainGarbia.txt\"");
+                System.out.println("    java -jar getARFF.java \"/path/train.txt\" \"/path/dev.txt\" \"/path/train.arff\" \"/path/dev.arff\" \"/path/trainGarbia.txt\" \"/path/devGarbia.txt\"");
                 System.out.println("Post-baldintzak: ");
                 System.out.println("    Sartutako train.arff fitxategian train.txt-ko datuak izatea formatu egokian.");
                 System.out.println("    Sartutako dev.arff fitxategian dev.txt-ko datuak izatea formatu egokian.");
